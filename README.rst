@@ -18,12 +18,12 @@ Initialization::
 
 Has Item?::
 
-    *void cachehash_has(void *key, size_t **key_len)
+    *void cachehash_has(void *key, size_t key_len)
 
 Get Item!::
 
-    *void cachehash_get(void *key, size_t **key_len)
+    *void cachehash_get(void *key, size_t key_len)
 
 Put Item!::
 
-    *void cachehash_get(void *key, size_t **key_len, void *value)
+    *void cachehash_get(void *key, size_t key_len, void *value)
