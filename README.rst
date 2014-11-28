@@ -17,6 +17,7 @@ Initialization::
     *cachehash cachehash_init(size_t maxitems, evict_cb *cb)
 
 Has Item?::
+
     *void cachehash_has(void *key, size_t **key_len)
 
 Get Item!::
