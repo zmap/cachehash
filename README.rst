@@ -14,7 +14,8 @@ API
 
 Initialization::
 
-    *cachehash cachehash_init(size_t maxitems, evict_cb *cb)
+    typedef void (*cachehash_evict_cb)(void* key, size_t keylen, void *data) 
+    *cachehash cachehash_init(size_t maxitems, cachehash_evict_cb *cb)
 
 Has Item?::
 
