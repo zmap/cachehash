@@ -48,7 +48,19 @@ Debug Print (print out entire data structure assuming that keys and values are n
 Example
 =======
 
-A quick example.
+A quick example::
+
+    include <cachehash.h>
+	ch = cachehash_init(5, NULL);
+	
+	char *key = "test-key";
+	char *value = "test-value";
+	cachehash_put(ch, key, strlen(key), value);
+	
+	printf("value of has is %s\n", cachehash_has(ch, key, strlen(key)));
+	assert(cachehash_has(ch, key, strlen(key)) == value);
+	
+	cachehash_free(ch, NULL);
 
 
 License
