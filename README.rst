@@ -66,7 +66,7 @@ A quick example::
 Dependencies
 ============
 
-CacheHash uses Judy Arrays (http://http://judy.sourceforge.net/) for its backend hash table.
+CacheHash uses Judy Arrays (http://judy.sourceforge.net/) for its backend hash table.
 This can generally be installed using your operating system's package manager. For example,
 you need to run `sudo apt-get install libjudy-dev` on Debian-based systems.
 
