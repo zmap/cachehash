@@ -59,6 +59,11 @@ cachehash* cachehash_init(size_t maxitems, cachehash_process_cb *cb)
     return retv;
 }
 
+void cachehash_set_evict_cb(cachehash *ch, cachehash_process_cb *cb)
+{
+    ch->evict_cb = cb;
+}
+
 // is the hashcache full?
 static inline int eviction_needed(cachehash *ch)
 {
