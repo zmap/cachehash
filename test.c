@@ -27,11 +27,11 @@ void testPut(void)
 	char *key = "test-key";
 	char *value = "test-value";
 	cachehash_put(ch, key, strlen(key), value);
-    cachehash_debug_dump(ch);
+	cachehash_debug_dump(ch);
 	key = "test-key-2";
 	value = "test-value-2";
 	cachehash_put(ch, key, strlen(key), value);
-    cachehash_debug_dump(ch);
+	cachehash_debug_dump(ch);
 }
 
 void testPutAndHas(void)
@@ -40,8 +40,8 @@ void testPutAndHas(void)
 	char *key = "test-key";
 	char *value = "test-value";
 	cachehash_put(ch, key, strlen(key), value);
-    cachehash_debug_dump(ch);
-    printf("value of has is %s\n", cachehash_has(ch, key, strlen(key)));
+	cachehash_debug_dump(ch);
+	printf("value of has is %s\n", cachehash_has(ch, key, strlen(key)));
 	assert(cachehash_has(ch, key, strlen(key)) == value);
 	cachehash_free(ch, NULL);
 }
@@ -57,8 +57,8 @@ void testEvict(void)
 	char *key = "test-key";
 	char *value = "test-value";
 	cachehash_put(ch, key, strlen(key), value);
-    cachehash_debug_dump(ch);
-    printf("value of has is %s\n", cachehash_has(ch, key, strlen(key)));
+	cachehash_debug_dump(ch);
+	printf("value of has is %s\n", cachehash_has(ch, key, strlen(key)));
 	assert(cachehash_has(ch, key, strlen(key)) == value);
 	cachehash_free(ch, NULL);
 
@@ -68,8 +68,8 @@ void testEvict(void)
 int main(void)
 {
 	testCreation();
-    printf("--\n");
+	printf("--\n");
 	testPut();
-    printf("--\n");
-    testPutAndHas();
+	printf("--\n");
+	testPutAndHas();
 }
