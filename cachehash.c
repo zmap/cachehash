@@ -141,7 +141,6 @@ void* cachehash_has(cachehash *ch, void *key, size_t keylen)
     assert(ch);
     assert(key);
     assert(keylen);
-
     node_t *n = judy_get(ch, key, keylen);
     if (n) {
         return n->data;
@@ -155,7 +154,6 @@ void* cachehash_get(cachehash *ch, void *key, size_t keylen)
     assert(ch);
     assert(key);
     assert(keylen);
-
     node_t *n = judy_get(ch, key, keylen);
     if (n) {
         use(ch, n);
@@ -168,7 +166,6 @@ void* cachehash_get(cachehash *ch, void *key, size_t keylen)
 void* cachehash_evict_if_full(cachehash *ch)
 {
     assert(ch);
-
     if (eviction_needed(ch) == EVICTION_UNNEC) {
         return NULL;
     }
@@ -229,7 +226,7 @@ void cachehash_free(cachehash *ch, cachehash_process_cb *cb)
     int rc;
     JHSFA(rc, ch->judy);
     node_t *n = ch->start;
-    while (n->next) {
+    do {
         if (n->key) {
             free(n->key);
             if (cb) {
@@ -237,7 +234,7 @@ void cachehash_free(cachehash *ch, cachehash_process_cb *cb)
             }
         }
         n = n->next;
-    }
+    } while(n);
     free(ch->malloced);
     free(ch);
 } 
@@ -245,12 +242,13 @@ void cachehash_free(cachehash *ch, cachehash_process_cb *cb)
 void cachehash_iter(cachehash *ch, cachehash_process_cb *cb)
 {
     node_t *n = ch->start;
-    while (n->next) {
+    do {
         if (n->key) {
             cb(n->data);
         } else {
         	break;
         }
         n = n->next;
-    }
+    } while (n);
 }
+
