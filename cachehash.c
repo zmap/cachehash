@@ -24,16 +24,16 @@ typedef struct node {
 // data structure that contains the enterity of a linked list
 // we typedef this as cachehash in cachehash.h s.t. external interface is clean
 struct cachehash_s {
-    Pvoid_t *judy;
+    Pvoid_t judy;
     void *malloced;
     node_t *start;
     node_t *end;
     size_t maxsize;
     size_t currsize;
-    cachehash_evict_cb *evict_cb;
+    cachehash_process_cb *evict_cb;
 };
 
-cachehash* cachehash_init(size_t maxitems, cachehash_free_cb *cb)
+cachehash* cachehash_init(size_t maxitems, cachehash_process_cb *cb)
 {
     assert(maxitems > 0);
     cachehash *retv = malloc(sizeof(cachehash));
@@ -73,13 +73,11 @@ static inline void* evict(cachehash *ch)
     assert(ch);
     node_t *last = ch->end;
     // remove item from judy array
-    Pvoid_t j = *ch->judy;
     int rc;
-    JHSD(rc, j, last->key, last->keylen);
+    JHSD(rc, ch->judy, last->key, last->keylen);
     // we should never end up with something in the linked list
     // that's not in the judy array.
     assert(rc);
-    *ch->judy = j;
     // reset linked list node
     void *retv = last->data;
     last->data = NULL;
@@ -118,10 +116,9 @@ static inline node_t* judy_get(cachehash *ch, void *key, size_t keylen)
     assert(ch);
     assert(key);
     assert(keylen);
-    Pvoid_t j = *ch->judy;
     Word_t *v_;
-    JHSG(v_, j, key, keylen);
-    *ch->judy = j;
+    JHSG(v_, ch->judy, key, keylen);
+    assert(*v_);
     return (node_t*) *v_;
 }
 
@@ -186,20 +183,38 @@ void cachehash_put(cachehash *ch, void *key, size_t keylen, void *value)
     use(ch, n);
     ch->currsize++;
     // add to judy array
-    Pvoid_t j = *ch->judy;
     Word_t *v_;
-    JHSI(v_, j, key, keylen);
+    JHSI(v_, ch->judy, key, keylen);
     // key should not already be in hash table
     assert(!*v_);
-    *v_ = (Word_t) value;
+    *v_ = (Word_t) n;
 }
 
-void cachehash_free(cachehash *ch, cachehash_free_cb *cb)
+// print out entire state.
+void cachehash_debug_dump(cachehash *ch)
+{
+    printf("Statistics:\n");
+    printf("\tcurrent size: %lu\n", ch->currsize);
+    printf("\tmaximum size: %lu\n", ch->maxsize);
+    printf("\n");
+    printf("Linked List:\n");
+    size_t i = 0;
+    node_t *n = ch->start;
+    do {
+        if (n->key) {
+            printf("\t%lu: %s -> %s\n", i++, (char*) n->key, (char*) n->data);
+        } else {
+            printf("\t%lu: EMPTY\n", i++);
+        }
+        n = n->next;
+    } while (n);
+}
+
+void cachehash_free(cachehash *ch, cachehash_process_cb *cb)
 {
     assert(ch);
     int rc;
-    Pvoid_t j = *ch->judy;
-    JHSFA(rc, j);
+    JHSFA(rc, ch->judy);
     node_t *n = ch->start;
     while (n->next) {
         if (n->key) {
@@ -213,3 +228,16 @@ void cachehash_free(cachehash *ch, cachehash_free_cb *cb)
     free(ch->malloced);
     free(ch);
 } 
+
+void cachehash_iter(cachehash *ch, cachehash_process_cb *cb)
+{
+    node_t *n = ch->start;
+    while (n->next) {
+        if (n->key) {
+            cb(n->data);
+        } else {
+        	break;
+        }
+        n = n->next;
+    }
+}
