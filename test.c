@@ -46,9 +46,9 @@ void testPutAndHas(void)
 	cachehash_free(ch, NULL);
 }
 
-void evict_cb(*void)
+void evict_cb(void *arg)
 {
-
+	(void) arg;
 }
 
 void testEvict(void)
