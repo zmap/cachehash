@@ -4,17 +4,17 @@ LDFLAGS = -ljudy
 
 OBJS = cachehash.o
 
-TARGETS = cachehash.so cachehash.a test_cachehash
+TARGETS = libcachehash.so libcachehash.a test_cachehash
 
 all: $(TARGETS)
 
 test_cachehash: test.c $(OBJS) 
 	$(CC) $(CFLAGS) $(OBJS) $< -o $@ $(LDFLAGS)
 
-cachehash.so: $(OBJS)
+libcachehash.so: $(OBJS)
 	$(CC) $(CFLAGS) -shared $(OBJS) -o $@ $(LDFLAGS)
 
-cachehash.a: $(OBJS)
+libcachehash.a: $(OBJS)
 	$(AR) rcs $@ $(OBJS)
 
 .PHONY: clean check
