@@ -131,7 +131,7 @@ static inline node_t* judy_get(cachehash *ch, void *key, size_t keylen)
     assert(keylen);
     Word_t *v_;
     JHSG(v_, ch->judy, key, keylen);
-    if (!v) {
+    if (!v_) {
         return NULL;
     }
     return (node_t*) *v_;
