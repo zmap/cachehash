@@ -2,8 +2,7 @@
  * CacheHash Copyright 2014 Regents of the University of Michigan
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy
- * of the License at http://www.apache.org/licenses/LICENSE-2.0
+ * use this file except in compliance with the License. You may obtain a copy * of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
 
 #include "cachehash.h"
@@ -36,12 +35,13 @@ struct cachehash_s {
     void *malloced;
     node_t *start;
     node_t *end;
+    node_t *curr_end;
     size_t maxsize;
     size_t currsize;
     cachehash_process_cb *evict_cb;
 };
-
-cachehash* cachehash_init(size_t maxitems, cachehash_process_cb *cb)
+//argument commented out because it is not used for anything (at least not at this point)
+cachehash* cachehash_init(size_t maxitems/* cachehash_process_cb *cb*/)
 {
     assert(maxitems > 0);
     cachehash *retv = malloc(sizeof(cachehash));
@@ -52,19 +52,19 @@ cachehash* cachehash_init(size_t maxitems, cachehash_process_cb *cb)
     retv->malloced = nodes;
     assert(nodes);
     retv->start = nodes;
+    retv->curr_end = nodes;
     retv->end = &nodes[maxitems-1];
     retv->maxsize = maxitems;
     retv->currsize = 0;
     // initial node
     nodes[0].next = &nodes[1];
     // middle nodes
-    for (int i=1; i < maxitems - 1; i++) {
+    for (unsigned int i=1; i < maxitems - 1; i++) {
         nodes[i].prev = &nodes[i-1];
         nodes[i].next = &nodes[i+1];
     }
     // last node
-    nodes[maxitems-1].prev = &nodes[maxitems-2];
-    return retv;
+    nodes[maxitems-1].prev = &nodes[maxitems-2]; return retv;
 }
 
 void cachehash_set_evict_cb(cachehash *ch, cachehash_process_cb *cb)
@@ -83,6 +83,8 @@ static inline int eviction_needed(cachehash *ch)
 // does not cb to user w/ object
 static inline void* evict(cachehash *ch)
 {
+
+    
     assert(ch);
     node_t *last = ch->end;
     // remove item from judy array
@@ -98,15 +100,17 @@ static inline void* evict(cachehash *ch)
     last->key = NULL;
     last->keylen = 0;
     ch->currsize--;
+    ch->curr_end = ch->end;
     return retv;
 }
 
 static inline void use(cachehash *ch, node_t *n)
 {
+    
     assert(ch);
     assert(n);
-    // if the first node, nothing to do
-    if (!n->prev) {
+    //if first node, nothing to do and return
+    if (n == ch->start) {
         return;
     }
     // remove from current spot in linked list
@@ -120,6 +124,7 @@ static inline void use(cachehash *ch, node_t *n)
     }
     // front of list
     n->next = ch->start;
+    ch->start->prev = n;
     ch->start = n;
     n->prev = NULL;
 }
@@ -156,6 +161,7 @@ void* cachehash_get(cachehash *ch, void *key, size_t keylen)
     assert(ch);
     assert(key);
     assert(keylen);
+
     node_t *n = judy_get(ch, key, keylen);
     if (n) {
         use(ch, n);
@@ -183,15 +189,27 @@ void cachehash_put(cachehash *ch, void *key, size_t keylen, void *value)
     void *evicted = cachehash_evict_if_full(ch);
     if (evicted && ch->evict_cb) {
        ch->evict_cb(evicted); 
+       ch->curr_end = ch->end;
     }
     // create new node
-    node_t *n = ch->end; 
+
+    node_t *n;
     void *newkey = malloc(keylen);
+    n = ch->curr_end;
     memcpy(newkey, key, keylen);
+
     n->key = newkey;
     n->keylen = keylen;
     n->data = value;
-    // move to the front
+    //n->prev = ch->curr_end->prev;
+    //n->next = ch->curr_end->next;
+
+    if(ch->curr_end != ch->end){ 
+        ch->curr_end = ch->curr_end->next;  
+        ch->curr_end->prev = n;
+    }
+
+
     use(ch, n);
     ch->currsize++;
     // add to judy array
@@ -212,6 +230,7 @@ void cachehash_debug_dump(cachehash *ch)
     printf("Linked List:\n");
     size_t i = 0;
     node_t *n = ch->start;
+
     do {
         if (n->key) {
             printf("\t%lu: %s -> %s\n", i++, (char*) n->key, (char*) n->data);
