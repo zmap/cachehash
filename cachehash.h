@@ -6,8 +6,15 @@
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
 
+#ifndef CACHEHASH_H
+#define CACHEHASH_H
+
 #include <stdint.h>
 #include <stddef.h>
+
+#ifdef __cplusplus
+extern C {
+#endif
 
 typedef struct cachehash_s cachehash;
 // function defintion for cachehash callbacks
@@ -31,3 +38,10 @@ void cachehash_iter(cachehash *ch, cachehash_process_cb *cb);
 void cachehash_debug_dump(cachehash *ch);
 // change the callback function for the cachehash
 void cachehash_set_evict_cb(cachehash *ch, cachehash_process_cb *cb);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* CACHEHASH_H */
+
