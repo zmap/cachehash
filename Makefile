@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -std=c99 -fpic -Wall -Wextra
-LDFLAGS = -ljudy
+CFLAGS = -std=c99 -fpic -Wall -Wextra -I/usr/local/include
+LDFLAGS = -L/usr/local/lib -lJudy
 
 OBJS = cachehash.o
 

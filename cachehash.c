@@ -40,8 +40,8 @@ struct cachehash_s {
     size_t currsize;
     cachehash_process_cb *evict_cb;
 };
-//argument commented out because it is not used for anything (at least not at this point)
-cachehash* cachehash_init(size_t maxitems/* cachehash_process_cb *cb*/)
+
+cachehash* cachehash_init(size_t maxitems, cachehash_process_cb *cb)
 {
     assert(maxitems > 0);
     cachehash *retv = malloc(sizeof(cachehash));
