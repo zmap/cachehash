@@ -13,7 +13,7 @@
 #include <stddef.h>
 
 #ifdef __cplusplus
-extern C {
+extern "C" {
 #endif
 
 typedef struct cachehash_s cachehash;
