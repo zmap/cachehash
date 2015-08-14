@@ -143,7 +143,7 @@ static inline node_t* judy_get(cachehash *ch, void *key, size_t keylen)
 }
 
 
-void* cachehash_has(cachehash *ch, void *key, size_t keylen)
+void* cachehash_has(cachehash *ch, const void *key, size_t keylen)
 {
     assert(ch);
     assert(key);
@@ -156,7 +156,7 @@ void* cachehash_has(cachehash *ch, void *key, size_t keylen)
     }
 }
 
-void* cachehash_get(cachehash *ch, void *key, size_t keylen)
+void* cachehash_get(cachehash *ch, const void *key, size_t keylen)
 {
     assert(ch);
     assert(key);
@@ -180,7 +180,7 @@ void* cachehash_evict_if_full(cachehash *ch)
     return evict(ch);
 }
 
-void cachehash_put(cachehash *ch, void *key, size_t keylen, void *value)
+void cachehash_put(cachehash *ch, const void *key, size_t keylen, void *value)
 {
     assert(ch);
     assert(key);

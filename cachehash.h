@@ -22,11 +22,11 @@ typedef void (cachehash_process_cb)(void *data);
 // initialize new cache hash
 cachehash* cachehash_init(size_t maxitems, cachehash_process_cb *cb);
 // return item from cachehash without changing its location in LL
-void* cachehash_has(cachehash *ch, void *key, size_t keylen);
+void* cachehash_has(cachehash *ch, const void *key, size_t keylen);
 // return item from cachehash and move to front
-void* cachehash_get(cachehash *ch, void *key, size_t keylen);
+void* cachehash_get(cachehash *ch, const void *key, size_t keylen);
 // add item to the cachehash
-void cachehash_put(cachehash *ch, void *key, size_t keylen, void *value);
+void cachehash_put(cachehash *ch, const void *key, size_t keylen, void *value);
 // free memory used by a cachehash. unusable until new initialization
 void cachehash_free(cachehash *ch, cachehash_process_cb *cb);
 // evict the LRU if the cachehash is full
