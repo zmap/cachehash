@@ -27,7 +27,7 @@ Get Item! (returns item and moves to be MRU object)::
 
 Put Item! (adds an item to the cachehash)::
 
-	void* cachehash_pet(cachehash *ch, void *key, size_t key_len, void *value)
+	void* cachehash_put(cachehash *ch, void *key, size_t key_len, void *value)
 	
 Evict Item! (evicts LRU item if the cachehash is full)::
 
